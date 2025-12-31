@@ -1,0 +1,64 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>HRobot Trigger</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body { font-family: Arial, sans-serif; margin: 2rem; }
+    form { max-width: 600px; }
+    label { display: block; margin: .75rem 0 .25rem; }
+    input { width: 100%; padding: .5rem; }
+    button { margin-top: 1rem; padding: .6rem 1.2rem; }
+    pre { background: #f7f7f7; padding: 1rem; overflow: auto; }
+  </style>
+</head>
+<body>
+  <h1>Trigger Workflow</h1>
+
+  <form id="triggerForm" action="/trigger" method="POST">
+    <label for="contactNumber">Contact Number (E.164)</label>
+    <input id="contactNumber" name="contactNumber" value="+919886102411" required />
+
+    <label for="freightOrder">Freight Order (FRO)</label>
+    <input id="freightOrder" name="freightOrder" value="67000019018" required />
+
+    <label for="carrier">Carrier</label>
+    <input id="carrier" name="carrier" value="Jhon" required />
+
+    <!-- Toggle this if your backend expects 'frieghtOrder' key -->
+    <!-- When set to 'on' it will be truthy in server; you can remove if not needed -->
+    <input type="hidden" name="frieghtOrder" value="">
+
+    <button type="submit">Trigger</button>
+  </form>
+
+  <h2>Response</h2>
+  <pre id="resp"></pre>
+
+  <script>
+    const form = document.getElementById('triggerForm');
+    const respBox = document.getElementById('resp');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      respBox.textContent = 'Sending...';
+
+      const formData = new FormData(form);
+      const payload = Object.fromEntries(formData.entries());
+
+      try {
+        const res = await fetch('/trigger', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        const json = await res.json();
+        respBox.textContent = JSON.stringify(json, null, 2);
+      } catch (err) {
+        respBox.textContent = 'Error: ' + err.message;
+      }
+    });
+   </script>
+</body>
