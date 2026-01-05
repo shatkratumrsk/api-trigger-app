@@ -177,8 +177,8 @@ function htmlSuccess(followUpUrl, data, statusCode, carrierContact) {
       <body>
         <div class="card">
           <h2>A call has been placed to ${escapeAttr(carrierContact)}.</h2>
-          <p>Click the link for the live call transcript:
-            <a href="${escapeAttr(followUpUrl)}" target="_blank" rel="noopener noreferrer">running-call</a>
+          <p>Click the link for running call transcript:
+            <a href="${escapeAttr(followUpUrl)}" target="_blank" rel="noopener noreferrer">running-call-transcript</a>
           </p>
           <details>
             <summary>Raw response</summary>
