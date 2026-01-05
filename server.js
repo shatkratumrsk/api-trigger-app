@@ -5,9 +5,9 @@ const express = require('express');
 const axios = require('axios');
 const path = require('path');
 
-const API_URL = process.env.API_URL;
-const API_KEY = process.env.API_KEY;
-const PORT = process.env.PORT || 3000;
+const API_URL = "https://workflows.platform.happyrobot.ai/hooks/staging/wfxnxbgynphv";
+const API_KEY = "019b4ad3-89aa-73db-9593-2801abbacd71";
+const PORT = 8080;
 
 if (!API_URL || !API_KEY) {
   console.error('ERROR: Missing API_URL or API_KEY in environment.');
