@@ -3,46 +3,280 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>HRobot Trigger</title>
+  <title>Missing Container Workflow Trigger</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    body { font-family: Arial, sans-serif; margin: 2rem; }
-    form { max-width: 600px; }
-    label { display: block; margin: .75rem 0 .25rem; }
-    input { width: 100%; padding: .5rem; }
-    button { margin-top: 1rem; padding: .6rem 1.2rem; }
-    pre { background: #f7f7f7; padding: 1rem; overflow: auto; }
+    :root {
+      --bg: #f9fafb;
+      --card: #ffffff;
+      --text: #111827;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --radius: 12px;
+    }
+
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Noto Sans", "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      line-height: 1.5;
+      /* Ensure body acts as stacking context */
+      position: relative;
+    }
+
+    /* ===== Hero background (fills 50% vertically) ===== */
+    .bg-hero {
+      position: fixed;         /* stays at top as you scroll */
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 50vh;            /* 50% of viewport height */
+      z-index: 0;              /* behind main content */
+
+      /* Background image — replace /bg.jpg with your file */
+      background-image: url('/bgpic.jpg');
+
+      /* Clean scaling & placement */
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+
+      /* Optional: soft overlay to improve text readability */
+      /* You can tweak this gradient as needed */
+      /* Draw overlay via pseudo element to avoid editing the source image */
+    }
+    .bg-hero::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to bottom,
+        rgba(255, 255, 255, 0.20),
+        rgba(255, 255, 255, 0.65)
+      );
+    }
+
+    /* Make sure main content sits above the hero */
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+    }
+
+    /* Header with logo */
+    header.app {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    header.app img {
+      height: 32px;
+      width: auto;
+      display: block;
+    }
+    header.app .brand {
+      font-weight: 700;
+      letter-spacing: 0.2px;
+    }
+
+    h1 { font-size: 1.75rem; margin: 0 0 1rem; }
+    .subtitle { color: var(--muted); margin-bottom: 1.25rem; font-size: 0.95rem; }
+
+    form { display: grid; grid-template-columns: 1fr; gap: 14px; }
+    .form-row { display: grid; gap: 6px; }
+    label { font-weight: 600; font-size: 0.95rem; }
+
+    input,
+    select {
+      appearance: none;
+      width: 100%;
+      max-width: 100%;          /* Prevent overflow */
+      box-sizing: border-box;   /* Include padding in width */
+      padding: 10px 12px;       /* Same padding for both */
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: #fff;
+      font-size: 1rem;
+      line-height: 1.4;         /* Better vertical alignment */
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    input:focus,
+    select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+    input[readonly] { background: #f3f4f6; color: #374151; }
+
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      background: var(--primary); color: #fff; border: 1px solid var(--primary);
+      border-radius: 10px; padding: 10px 16px; font-weight: 600; cursor: pointer;
+      transition: background 0.15s ease, box-shadow 0.15s ease, transform 0.02s ease;
+    }
+    .btn:hover { background: var(--primary-hover); }
+    .btn:active { transform: translateY(1px); }
+
+    .section-title { margin-top: 20px; font-size: 1.25rem; }
+
+    .help { color: var(--muted); font-size: 0.9rem; }
+
+    /* --- Response pane: high-contrast & readable --- */
+    #resp {
+      padding: 16px;
+      min-height: 88px;
+      overflow: auto;
+      border-radius: 12px;
+
+      background: #ffffff;         /* white card */
+      border: 2px solid #0f172a;   /* deep slate-900 border */
+
+      color: #0f172a;              /* deep slate-900 */
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Noto Sans", Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+    #resp a {
+      color: #1d4ed8;              /* blue-700 */
+      font-weight: 600;
+      text-decoration: none;
+    }
+    #resp a:hover { color: #1e40af; text-decoration: underline; }
+    #resp pre {
+      background: #f8fafc;         /* slate-50 */
+      color: #0f172a;              /* deep slate-900 */
+      border: 1px solid #e2e8f0;   /* slate-200 */
+      border-radius: 8px;
+      padding: 12px;
+      overflow: auto;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 0.95rem;
+      line-height: 1.5;
+      margin: 10px 0 0;
+    }
+    #resp .muted { color: #334155; } /* slate-700 */
+    #resp h2 {
+      color: #0f172a;
+      font-weight: 700;
+      margin: 0 0 12px;
+    }
+    #resp p { margin: 6px 0 12px; color: #0f172a; }
+    #resp summary { cursor: pointer; color: #334155; }
+
+    @media (max-width: 520px) {
+      .container { padding: 16px; }
+      .card { padding: 16px; }
+      .bg-hero { height: 45vh; } /* optional tweak for small screens */
+    }
   </style>
 </head>
 <body>
-  <h1>Trigger Workflow</h1>
+  <!-- Background image (top 50% of viewport) -->
+  <div class="bg-hero" aria-hidden="true"></div>
 
-  <form id="triggerForm" action="/trigger" method="POST">
-    <label for="contactNumber">Contact Number (E.164)</label>
-    <input id="contactNumber" name="contactNumber" value="+919886102411" required />
+  <div class="container">
+    <header class="app">
+      <!-- Company logo: place logo.svg in /public (or use logo.png) -->
+      <img src="/logo.svg" alt="Company logo" />
+    </header>
 
-    <label for="freightOrder">Freight Order (FRO)</label>
-    <input id="freightOrder" name="freightOrder" value="67000019018" required />
+    <div class="card">
+      <h1>Missing Container Workflow(Demo)</h1>
+      <p class="subtitle">Submit a work order and contact details to trigger the workflow.</p>
 
-    <label for="carrier">Carrier</label>
-    <input id="carrier" name="carrier" value="Jhon" required />
+      <form id="triggerForm" action="/trigger" method="POST" novalidate>
+        <div class="form-row">
+          <label for="freightOrder">Work Order (e.g., 67000019018)</label>
+          <select id="freightOrder" name="freightOrder" required>
+            <option value="" disabled selected>Select a work order</option>
+            <!-- Options will be inserted dynamically by JS -->
+          </select>
+          <span class="help">Choose from the prefilled list.</span>
+        </div>
 
-    <!-- Toggle this if your backend expects 'frieghtOrder' key -->
-    <!-- When set to 'on' it will be truthy in server; you can remove if not needed -->
-    <input type="hidden" name="frieghtOrder" value="">
+       <div class="form-row">
+          <label for="carrierContact">Vendor: Contact Person</label>
+          <input id="carrierContact" name="carrierContact" value="Navneet" required />
+        </div>
 
-    <button type="submit">Trigger</button>
-  </form>
+        <div class="form-row">
+          <label for="contactNumber">Vendor: Contact Number (e.g., +4591623058)</label>
+          <input id="contactNumber" name="contactNumber" value="+4591623058" required />
+        </div>
 
-  <h2>Response</h2>
-  <pre id="resp"></pre>
+        <!-- Optional hidden field if backend expects misspelled 'frieghtOrder' -->
+        <input type="hidden" name="frieghtOrder" id="frieghtOrderHidden" value="">
+
+        <button type="submit" class="btn">Trigger</button>
+      </form>
+
+      <h2 class="section-title">Response</h2>
+      <div id="resp"></div>
+    </div>
+  </div>
 
   <script>
+    // ---- Dynamic Freight Orders list (edit here as needed) ----
+    const WORK_ORDERS = [
+      '67000477229',
+      '67000476216',
+      '67000469270'
+    ];
+
+    // Populate the Freight Order <select> dynamically
+    const freightOrderSelect = document.getElementById('freightOrder');
+    (function populateWorkOrders() {
+      const fragment = document.createDocumentFragment();
+      WORK_ORDERS.forEach(order => {
+        const opt = document.createElement('option');
+        opt.value = order;
+        opt.textContent = order;
+        fragment.appendChild(opt);
+      });
+      freightOrderSelect.appendChild(fragment);
+    })();
+
     const form = document.getElementById('triggerForm');
     const respBox = document.getElementById('resp');
+    const frieghtOrderHidden = document.getElementById('frieghtOrderHidden');
+
+    // Keep hidden misspelled key in sync (if your backend needs it)
+    freightOrderSelect.addEventListener('change', () => {
+      frieghtOrderHidden.value = freightOrderSelect.value || '';
+    });
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
+
+      // Basic manual validation
+      if (!freightOrderSelect.value) {
+        respBox.textContent = 'Error: Please select a work order.';
+        return;
+      }
+      if (!form.contactNumber.value) {
+        respBox.textContent = 'Error: Please provide a contact number.';
+        return;
+      }
+      if (!form.carrierContact.value) {
+        respBox.textContent = 'Error: Please provide a vendor contact person.';
+        return;
+      }
+
       respBox.textContent = 'Sending...';
 
       const formData = new FormData(form);
@@ -54,11 +288,26 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload),
         });
-        const json = await res.json();
-        respBox.textContent = JSON.stringify(json, null, 2);
+
+        const contentType = res.headers.get('content-type') || '';
+        const isHtml = contentType.includes('text/html');
+        const isJson = contentType.includes('application/json');
+
+        if (isHtml) {
+          const html = await res.text();
+          // Render server HTML (contains the clickable "running_call" link)
+          respBox.innerHTML = html;
+        } else if (isJson) {
+          const json = await res.json();
+          respBox.textContent = JSON.stringify(json, null, 2);
+        } else {
+          const text = await res.text();
+          respBox.textContent = text;
+        }
       } catch (err) {
         respBox.textContent = 'Error: ' + err.message;
       }
     });
-   </script>
+  </script>
 </body>
+</html>
